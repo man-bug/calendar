@@ -50,7 +50,7 @@ export default function SignUp() {
                     : input.type = "password"
             };
         }
-    }, [isPasswordVisible, passwordRef.current])
+    }, [isPasswordVisible])
 
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -104,7 +104,7 @@ export default function SignUp() {
 
 
     return (
-        <main className="py-[12.5%] flex flex-col items-center justify-center gap-2">
+        <main className="flex flex-col items-center justify-center gap-2 py-[12.5%]">
             <Card className="md:min-w-[440px]">
                 <Form {...form}>
                     <form
@@ -116,7 +116,7 @@ export default function SignUp() {
                             <CardTitle className="text-2xl">Create an account</CardTitle>
                             <CardDescription>
                                 Already have an account?&nbsp;
-                                <Button asChild variant="link" className="text-muted-foreground hover:text-blue p-0 h-fit"><Link href="/login">Login</Link></Button>
+                                <Button asChild variant="link" className="h-fit p-0 text-muted-foreground hover:text-blue"><Link href="/login">Login</Link></Button>
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -156,8 +156,8 @@ export default function SignUp() {
                                                     {...field}
                                                     disabled={loading}
                                                 />
-                                                <Button onClick={() => setIsPasswordVisible((prev) => (!prev))} className="absolute rounded-l-none rounded-r-[calc(var(--radius)-3px)] !shadow-none right-[1px] top-1/2 -translate-y-1/2 h-[38px] w-[38px]" type="button" variant="ghost" size="icon">
-                                                    {isPasswordVisible ? <EyeOpenIcon className="w-4 h-4" /> : <EyeClosedIcon className="w-4 h-4" />}
+                                                <Button onClick={() => setIsPasswordVisible((prev) => (!prev))} className="absolute right-[1px] top-1/2 h-[38px] w-[38px] -translate-y-1/2 rounded-l-none rounded-r-[calc(var(--radius)-3px)] !shadow-none" type="button" variant="ghost" size="icon">
+                                                    {isPasswordVisible ? <EyeOpenIcon className="h-4 w-4" /> : <EyeClosedIcon className="h-4 w-4" />}
                                                 </Button>
                                             </div>
                                         </FormControl>
@@ -185,7 +185,7 @@ export default function SignUp() {
                                 )}
                             />
                         </CardContent>
-                        <CardFooter className="pt-6 border-t bg-muted">
+                        <CardFooter className="border-t bg-muted pt-6">
                             <Button disabled={loading} type="submit" size="lg" className="w-full">Register</Button>
                         </CardFooter>
                     </form>

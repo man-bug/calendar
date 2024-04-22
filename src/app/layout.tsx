@@ -22,8 +22,6 @@ const fontSerif = FontSerif({
     variable: "--font-serif",
 });
 
-export { fontMono };
-
 export const metadata: Metadata = {
     title: "calendar",
     description: "manbug's calendar",
