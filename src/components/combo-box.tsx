@@ -20,7 +20,16 @@ import {
 } from "@/components/ui/popover"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-export function Combobox({ options, placeholder, initialValue, className, triggerClassName, children }: { options: { label: string, value: string }[], placeholder: string, initialValue: string, className?: string, triggerClassName?: string, children?: React.ReactNode }) {
+type Props = {
+    options: { label: string; value: string }[];
+    placeholder: string;
+    initialValue: string;
+    className?: string;
+    triggerClassName?: string;
+    children?: React.ReactNode;
+};
+
+export function Combobox({ options, placeholder, initialValue, className, triggerClassName, children }: Props) {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState(initialValue);
 

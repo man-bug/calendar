@@ -8,12 +8,24 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DateTime } from "./calendar-view";
 import { addHours, addMinutes, format } from "date-fns";
+import { Form } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 type Props = {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     selectedDateTime: DateTime
 }
+const formSchema = z.object({
+    description: z.string().optional(),
+    startDate: z.date(),
+    startTime: z.date(),
+    endTime: z.date(),
+    repeat: z.enum(["never", "daily", "weekly", "weekdays"]),
+    color: z.string(),
+});
 
 export default function NewEventDialog({ open, setOpen, selectedDateTime }: Props) {
     const hourIntervals = [];
@@ -44,6 +56,19 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
         },
     ]
 
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            description: "",
+            startDate: selectedDateTime.date,
+            startTime: selectedDateTime.hour,
+            endTime: addHours(selectedDateTime.hour, 1),
+            repeat: "never",
+            color: "#000000",
+        },
+    });
+
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="p-0 w-fit max-w-xl">
@@ -62,6 +87,8 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
                         </Button>
                     </DialogDescription>
                 </DialogHeader>
+                {/* <Form {...form} />
+                <form> */}
                 <div className="px-6 space-y-2">
                     <div className="grid grid-cols-2 items-center gap-2">
                         <div className="flex flex-col gap-1">
@@ -104,6 +131,8 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
                     </DialogClose>
                     <Button size="lg" className="h-9">Create</Button>
                 </DialogFooter>
+                {/*</form>
+                </Form> */}
             </DialogContent>
         </Dialog>
 

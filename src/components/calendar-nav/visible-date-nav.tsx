@@ -6,6 +6,7 @@ import { CaretLeftIcon, CaretRightIcon } from "@radix-ui/react-icons";
 import { addDays, addMonths, addWeeks, endOfWeek, formatDate, startOfWeek, subDays, subMonths, subWeeks } from "date-fns";
 import { useSelectedView } from "@/context/selected-view-context";
 import { views } from "@/context/selected-view-context";
+import { Badge } from "../ui/badge";
 
 export default function VisibleDateNav() {
     const { visibleDate, setVisibleDate } = useVisibleDate();
@@ -65,17 +66,18 @@ export default function VisibleDateNav() {
     }
 
     return (
-        <div className="flex items-center gap-2 ml-[64px]">
-            <Button onClick={() => handleClick("subtract")} variant="ghost" size="icon" className="!bg-transparent text-muted-foreground !shadow-none hover:text-foreground">
+        <div className="flex items-center">
+            <Button onClick={() => handleClick("subtract")} variant="ghost" size="icon" className="text-muted-foreground !shadow-none hover:text-foreground">
                 <CaretLeftIcon className="h-5 w-5" />
             </Button>
-            <div className="flex z-10 shrink-0 flex-col items-center justify-center text-sm text-muted-foreground">
-                <span className="font-mono">{getFormattedDate()}</span>
-            </div>
-            <Button onClick={() => handleClick("add")} variant="ghost" size="icon" className="!bg-transparent text-muted-foreground !shadow-none hover:text-foreground">
+            <Button onClick={() => handleClick("add")} variant="ghost" size="icon" className="text-muted-foreground !shadow-none hover:text-foreground">
                 <CaretRightIcon className="h-5 w-5" />
             </Button>
-
+            <div className="flex z-10 ml-2 shrink-0 flex-col items-center justify-center text-sm text-muted-foreground">
+                <Badge variant="outline" className="w-fit text-muted-foreground">
+                {getFormattedDate()}
+                </Badge>
+            </div>
         </div>
     )
 }
