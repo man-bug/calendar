@@ -11,8 +11,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function DatePicker() {
-    const [date, setDate] = React.useState<Date>()
+export function DatePicker({ todayBtn, initialSelection, required }: { todayBtn?: boolean, initialSelection?: Date, required?: boolean }) {
+    const [date, setDate] = React.useState<Date | undefined>(initialSelection)
 
     return (
         <Popover>
@@ -22,18 +22,19 @@ export function DatePicker() {
                         variant="outline"
                         className={cn(
                             "w-[248px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !date && !initialSelection && "text-muted-foreground"
                         )}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : format(new Date(), "PPP")}
+                        {date && initialSelection ? format(date, "EEEE, PP") : date ? format(date, "PPP") : format(new Date(), "PPP")}
                     </Button>
-                    <Button onClick={(e) => e.stopPropagation()} variant="secondary" className="absolute right-0 h-9 rounded-l-none shadow-none" size="sm">Today</Button>
+                    {todayBtn && <Button onClick={(e) => e.stopPropagation()} variant="secondary" className="absolute right-0 h-9 rounded-l-none shadow-none" size="sm">Today</Button>}
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent portalContainer className="w-auto p-0" align="start">
                 <Calendar
                     mode="single"
+                    required={required ? true : false}
                     selected={date}
                     onSelect={setDate}
                     initialFocus

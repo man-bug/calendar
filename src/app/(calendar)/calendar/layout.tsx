@@ -2,6 +2,7 @@ import SideNav from "@/components/calendar-nav/side-nav";
 import TopNav from "@/components/calendar-nav/top-nav";
 import { SelectedLayoutProvider } from "@/context/selected-layout-context";
 import { SelectedViewProvider } from "@/context/selected-view-context";
+import { VisibleDateProvider } from "@/context/visible-date-context";
 import React from "react";
 
 export default function CalendarLayout({ children }: {children: React.ReactNode}) {
@@ -9,9 +10,11 @@ export default function CalendarLayout({ children }: {children: React.ReactNode}
         <div className="min-h-screen flex flex-col pt-16 pl-16 relative">
             <SelectedViewProvider>
                 <SelectedLayoutProvider>
-                    <TopNav />
-                    <SideNav />
-                    {children}
+                    <VisibleDateProvider>
+                        <TopNav />
+                        <SideNav />
+                        {children}
+                    </VisibleDateProvider>
                 </SelectedLayoutProvider>
             </SelectedViewProvider>
         </div>
