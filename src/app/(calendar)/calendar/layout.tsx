@@ -7,7 +7,7 @@ import React from "react";
 
 export default function CalendarLayout({ children }: {children: React.ReactNode}) {
     return (
-        <div className="min-h-screen flex flex-col pt-16 pl-16 relative">
+        <div className="min-h-screen flex flex-col">
             <SelectedViewProvider>
                 <SelectedLayoutProvider>
                     <VisibleDateProvider>

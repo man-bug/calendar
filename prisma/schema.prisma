@@ -14,28 +14,37 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    email     String   @unique
-    password  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  password String
+
+  events   CalendarEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CalendarEvent {
- id          String   @id @default(auto()) @map("_id") @db.ObjectId
- description String
- startDate   DateTime
- endDate     DateTime
- startTime   DateTime
- endTime     DateTime
- repeat      RepeatType
- color       String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  startDate DateTime
+  startTime String
+  endTime   String
+  repeat    String
+  color     String
+  label     String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-enum RepeatType {
- never
- daily
- weekly
- weekdays
-}
-
+// TODO: figure out enums
+//enum RepeatType {
+//  never
+//  daily
+//  weekly
+//  weekdays
+//}

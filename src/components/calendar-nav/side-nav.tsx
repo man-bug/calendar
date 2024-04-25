@@ -4,14 +4,16 @@ import EventBtn from "./event-btn";
 import { Button } from "../ui/button";
 import { useSelectedView, views } from "@/context/selected-view-context";
 import { layouts, useSelectedLayout } from "@/context/selected-layout-context";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 
 export default function SideNav() {
     const { selectedView, setSelectedView } = useSelectedView();
     const { selectedLayout, setSelectedLayout } = useSelectedLayout();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
-    return (
-        <aside className="w-16 h-[calc(100vh-63px)] fixed left-0 top-[63px] bg-background border-r border-border/75 z-50">
+    if (isDesktop) return (
+        <aside className="w-16 h-[calc(100vh-63px)] fixed left-0 top-[63px] bg-background border-r border-border/75 z-[2000]">
             <div className="flex flex-col items-center gap-2">
                 {views.map((view, idx) => (
                     <Button key={idx} onClick={() => setSelectedView(view)} variant={selectedView === view ? "secondary" : "outline"} size="icon" className="w-10 h-10">

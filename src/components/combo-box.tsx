@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 
@@ -24,12 +22,14 @@ type Props = {
     options: { label: string; value: string }[];
     placeholder: string;
     initialValue: string;
+    customValue?: string;
+    customSetter?: React.Dispatch<React.SetStateAction<any>>;
     className?: string;
     triggerClassName?: string;
     children?: React.ReactNode;
 };
 
-export function Combobox({ options, placeholder, initialValue, className, triggerClassName, children }: Props) {
+export function Combobox({ options, placeholder, initialValue, customValue, customSetter, className, triggerClassName, children }: Props) {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState(initialValue);
 
@@ -59,11 +59,15 @@ export function Combobox({ options, placeholder, initialValue, className, trigge
                                 {options.map((option) => (
                                     <CommandItem
                                         key={option.value}
-                                        value={option.value}
-                                        onSelect={(currentValue) => {
-                                            setValue(currentValue === value ? "" : currentValue)
-                                            setOpen(false)
-                                        }}
+                                        value={customValue ? customValue : option.value}
+                                        onSelect={
+                                            (currentValue) => {
+                                                customSetter
+                                                    ? (customSetter(currentValue), setValue(currentValue)) // first return selection to customSetter, then update UI
+                                                    : setValue(currentValue)
+                                                setOpen(false)
+                                            }
+                                        }
                                     >
                                         {option.label}
                                         <CheckIcon

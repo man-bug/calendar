@@ -11,6 +11,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useVisibleDate } from "@/context/visible-date-context"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 type Props = {
     todayBtn?: boolean;
@@ -23,6 +24,7 @@ type Props = {
 export function DatePicker({ todayBtn, initialSelection, customSetter, customSelected, required }: Props) {
     const [date, setDate] = React.useState<Date | undefined>(initialSelection)
     const { setVisibleDate } = useVisibleDate();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     return (
         <Popover>
@@ -31,8 +33,9 @@ export function DatePicker({ todayBtn, initialSelection, customSetter, customSel
                     <Button
                         variant="outline"
                         className={cn(
-                            "w-[248px] justify-start text-left font-normal",
-                            !date && !initialSelection && !customSelected && "text-muted-foreground"
+                            "justify-start text-left font-normal",
+                            !date && !initialSelection && !customSelected && "text-muted-foreground",
+                            isDesktop ? "w-[248px]" : "w-fit"
                         )}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -41,7 +44,7 @@ export function DatePicker({ todayBtn, initialSelection, customSetter, customSel
                     {todayBtn && <Button onClick={(e) => {e.stopPropagation(); setVisibleDate(new Date())}} variant="secondary" className="absolute right-0 h-9 rounded-l-none shadow-none" size="sm">Today</Button>}
                 </div>
             </PopoverTrigger>
-            <PopoverContent portalContainer className="w-auto p-0" align="start">
+            <PopoverContent portalContainer className="w-auto p-0 z-[2500]" align="start">
                 <Calendar
                     mode="single"
                     required={required ? true : false}

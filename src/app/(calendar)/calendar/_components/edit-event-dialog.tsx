@@ -5,8 +5,7 @@ import ColorPicker from "./color-picker";
 import { Combobox } from "@/components/combo-box";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { DateTime } from "./calendar-view";
-import { addHours, addMinutes, format } from "date-fns";
+import { addMinutes, format } from "date-fns";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,17 +15,19 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { useRouter } from "next/navigation";
+import { CalendarEvent } from "@prisma/client";
 import { eventFormSchema, eventLabels, repeatOptions } from "./_util";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type Props = {
-    open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    selectedDateTime: DateTime
+    open: boolean,
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    selectedEvent: CalendarEvent
 }
 const formSchema = eventFormSchema;
-export default function NewEventDialog({ open, setOpen, selectedDateTime }: Props) {
+
+export default function EditEventDialog({ open, setOpen, selectedEvent}: Props) {
     const hourIntervals: any[] = [];
     let currentTime = new Date();
     currentTime.setHours(0, 0, 0, 0);
@@ -39,13 +40,13 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "New Event",
-            startDate: selectedDateTime.date,
-            startTime: format(addHours(new Date(selectedDateTime.date), selectedDateTime.hour), "h:mm a"),
-            endTime: format(addHours(new Date(selectedDateTime.date), selectedDateTime.hour + 1), "h:mm a"),
-            repeat: "never",
-            color: "#9EC1CF",
-            label: "none",
+            title: selectedEvent.title,
+            startDate: selectedEvent.startDate,
+            startTime: selectedEvent.startTime,
+            endTime: selectedEvent.endTime,
+            repeat: selectedEvent.repeat,
+            color: selectedEvent.color,
+            label: selectedEvent.label,
         },
     });
 
@@ -53,18 +54,60 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
     const toast = useToast();
     const router = useRouter();
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    async function handleDelete() {
+        const eventId = selectedEvent.id
         try {
             new Promise(async (resolve, reject) => {
-                setLoading(true);
+                setLoading(true)
                 try {
-                    const res = await fetch("/api/events/new-event", {
-                        method: "POST",
+                    const res = await fetch("/api/events/delete-event", {
+                        method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
+                            eventId
+                        })
+                    });
+
+                    if (res.ok) {
+                        resolve(res);
+                        toast.toast({
+                            title: "Event deleted",
+                            description: "Event successfully deleted.",
+                        });
+                        setOpen(false);
+                        router.refresh()
+                    } else {
+                        toast.toast({
+                            title: "Error",
+                            description: res.statusText ? res.statusText : "Unknown error",
+                            variant: "destructive",
+                        });
+                    }
+                } catch (err: any) {
+                    reject(err || "Unknown error");
+                }
+                setLoading(false);
+            });
+        } catch (err: any) {
+            console.error(err)
+        }
+        setLoading(false);
+    }
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            new Promise(async (resolve, reject) => {
+                setLoading(true);
+                try {
+                    const res = await fetch("/api/events/update-event", {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            eventId: selectedEvent.id,
                             title: values.title,
                             startDate: values.startDate,
                             startTime: values.startTime,
@@ -78,16 +121,15 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
                     if (res.ok) {
                         resolve(res);
                         toast.toast({
-                            title: "Event created",
-                            description: "Event successfully created.",
+                            title: "Event updated",
+                            description: "Event successfully updated.",
                         });
                         setOpen(false);
                         router.refresh();
                     } else {
                         toast.toast({
                             title: "Error",
-                            description:
-                            res.statusText ? res.statusText : "Unknown error",
+                            description: res.statusText ? res.statusText : "Unknown error",
                             variant: "destructive",
                         });
                     }
@@ -102,9 +144,7 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
         setLoading(false);
     }
 
-    const isDesktop = useMediaQuery("(min-width: 768px)");
-
-    if (isDesktop) return (
+    return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="p-0 w-fit max-w-xl">
                 <Form {...form}>
@@ -150,9 +190,7 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
                                                         <Button
                                                             type="button"
                                                             variant="outline"
-                                                            className={cn(
-                                                                "w-[248px] justify-start text-left font-normal",
-                                                            )}
+                                                            className={cn("w-[248px] justify-start text-left font-normal",)}
                                                         >
                                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                                             {format(field.value, "EEEE, PP")}
@@ -231,16 +269,30 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
                                         )}
                                     />
                                 </div>
-
                             </div>
+
+                            <Accordion type="single" collapsible className="w-full">
+                                <AccordionItem value="advanced" className="border-b-0">
+                                    <AccordionTrigger className="font-normal text-xs">
+                                        Advanced
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <Button type="button" onClick={() => handleDelete()} variant="destructive">
+                                            Delete event
+                                        </Button>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
+
+
                         <DialogFooter className="bg-muted !justify-between p-4 px-6 border-t">
                             <DialogClose asChild>
                                 <Button disabled={loading} type="button" size="lg" className="h-9" variant="outline">
                                     Cancel
                                 </Button>
                             </DialogClose>
-                            <Button disabled={loading} type="submit" size="lg" className="h-9">Create</Button>
+                            <Button disabled={loading} type="submit" size="lg" className="h-9">Update</Button>
                         </DialogFooter>
                     </form>
                 </Form>

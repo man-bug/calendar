@@ -11,36 +11,45 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import useDomLoaded from "@/hooks/use-dom-loaded";
+import { Skeleton } from "../ui/skeleton";
 
 export default function AuthBtns() {
     const { data: session } = useSession();
+    const loaded = useDomLoaded();
 
-    return session && session.user?.email
-        ? <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="border-none bg-transparent shadow-none h-fit w-fit rounded-full"
-                >
-                    <Avatar>
-                        <AvatarFallback>
-                            {session.user.email.substring(0, 1).toUpperCase() + session.user.email.substring(1, 2).toLowerCase() || "Me"}
-                        </AvatarFallback>
-                    </Avatar>
-                    <span className="sr-only">Account menu</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                    <Link href="/profile">
-                        My profile
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="!text-destructive" onClick={() => signOut()}>Sign out</DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-        : <div className="flex items-center space-x-2">
+    if (loaded && session && session.user?.email) {
+        const email = session.user.email;
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="border-none bg-transparent shadow-none h-fit w-fit rounded-full"
+                    >
+                        <Avatar>
+                            <AvatarFallback>
+                                {email.substring(0, 1).toUpperCase() + email.substring(1, 2).toLowerCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="sr-only">Account menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                        <Link href="/profile">
+                            My profile
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="!text-destructive" onClick={() => signOut()}>Sign out</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        )
+    }
+
+    return (
+        <div className="flex items-center space-x-2">
             <Button variant="ghost" asChild>
                 <Link href="/login">
                     Login
@@ -53,4 +62,7 @@ export default function AuthBtns() {
                 </Link>
             </Button>
         </div>
+
+    )
+
 }

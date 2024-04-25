@@ -38,13 +38,15 @@ export const authOptions: NextAuthOptions = {
 				);
 				if (!isCorrectPassword) throw new Error("Bcrypt: Invalid credentials");
 
-                return user
+                return {
+                   id: user.id,
+                   email:  user.email
+                } as User
             },
 		}),
 	],
 	callbacks: {
 		async jwt({ token, user }: { token: JWT; user: User }) {
-			// console.log("jwt callback: ", token, user);
 			if (user) {
 				return {
 					...token,
@@ -55,7 +57,6 @@ export const authOptions: NextAuthOptions = {
 			return token;
 		},
 		async session({ session, token }: { session: Session; token: JWT }) {
-			// console.log("session callback: ", session, token);
 			return {
 				...session,
 				user: {
