@@ -57,7 +57,7 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                                     className={cn("w-full relative justify-start shrink-0 rounded-none border-b !bg-transparent !shadow-none transition-[height] duration-200", selectedLayout === layouts[0] ? "h-20 max-h-20" : "h-40 max-h-40")}
                                     onClick={() => handleButtonClick(setMinutes(visibleDate, 0), hour)}
                                 >
-                                    <div className="flex w-full max-w-14 shrink-0 items-center justify-between gap-1 pr-2 text-sm text-muted-foreground">
+                                    <div className="flex w-full max-w-10 shrink-0 items-center justify-between gap-1 text-sm text-muted-foreground">
                                         <span className="ml-auto">{formatHour(hour, visibleDate).time}</span>
                                         <span>{formatHour(hour, visibleDate).meridiem}</span>
                                     </div>
@@ -68,22 +68,20 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                                 const endTime = parse(event.endTime, 'hh:mm a', new Date());
 
                                 const HOUR_SIZE_PX = selectedLayout === layouts[0] ? 80 : 160;
-                                const MINUTE_SIZE_PX = HOUR_SIZE_PX / 60; // Assuming each hour is represented by HOUR_SIZE_PX pixels
+                                const MINUTE_SIZE_PX = HOUR_SIZE_PX / 60;
 
                                 const startHour = startTime.getHours();
                                 const startMinutes = startTime.getMinutes();
                                 const endHour = endTime.getHours();
                                 const endMinutes = endTime.getMinutes();
 
-                                // Calculate the duration in minutes
                                 const durationMinutes = (endHour - startHour) * 60 + (endMinutes - startMinutes);
 
-                                // Calculate the top and height values in pixels
                                 const topValue = (startHour * HOUR_SIZE_PX) + (startMinutes * MINUTE_SIZE_PX);
                                 const heightValue = durationMinutes * MINUTE_SIZE_PX;
 
                                 return (
-                                    <Button onClick={() => handleEventClick(event)} key={idx} className={cn("left-[72px] p-1 absolute text-primary transition-[height] duration-200 w-full justify-start !bg-transparent !shadow-none", selectedLayout === layouts[0] ? "h-20" : "h-40")} style={{ top: `${topValue}px`, height: `${heightValue}px` }}>
+                                    <Button onClick={() => handleEventClick(event)} key={idx} className={cn("left-[72px] p-1 absolute text-primary transition-[height] duration-200 w-[calc(100%-72px)] justify-start !bg-transparent !shadow-none", selectedLayout === layouts[0] ? "h-20" : "h-40")} style={{ top: `${topValue}px`, height: `${heightValue}px` }}>
                                         <div className="rounded-md h-full text-primary flex flex-col gap-0 min-w-full overflow-hidden p-2 text-left" style={{backgroundColor: event.color}}>
                                             <span className="font-semibold leading-none">{event.title}</span>
                                             <span>{event.startTime} &mdash; {event.endTime}</span>
@@ -95,7 +93,7 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                     </div>
                     : selectedView === views[1] // week view
                         ? <div className="flex min-h-full max-w-full">
-                            <div className="flex shrink flex-col items-center text-sm text-muted-foreground">
+                            <div className="flex shrink flex-col w-14 items-center text-sm text-muted-foreground">
                                 <div className="w-full h-[69px] max-h-[69px] border-b border-r bg-muted py-2 px-4 grid place-items-center">
                                     <span className="font-mono text-muted-foreground">W{currentWeekNumber}</span>
                                 </div>
@@ -111,7 +109,7 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                             </div>
                             <div className="flex grow flex-row">
                                 {getWeekDays(visibleDate).map((day, index) => (
-                                    <div key={index} className={cn("flex shrink-0 animate-[width] items-start gap-4 border-r duration-200 last:border-r-0", selectedLayout === layouts[0] ? "w-px grow" : "w-[25%]")}>
+                                    <div key={index} className={cn("flex shrink-0 animate-[width] items-start gap-4 border-r duration-200 last:border-r-0 relative", selectedLayout === layouts[0] ? "w-px grow" : "w-[25%]")}>
                                         <div className="flex w-full shrink-0 flex-col items-center justify-center">
                                             <div className="flex w-full flex-col items-center justify-center border-b bg-muted py-2 text-sm text-muted-foreground relative">
                                                 <span className="font-mono z-20">{formatDate(day).day}</span>
@@ -127,9 +125,35 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                                                 </Button>
                                             ))}
                                         </div>
-                                    </div>
-                                ))}
+                                        {getVisibleEvents(events, day).map((event, idx) => {
+                                            const startTime = parse(event.startTime, 'hh:mm a', new Date());
+                                            const endTime = parse(event.endTime, 'hh:mm a', new Date());
 
+                                            const HOUR_SIZE_PX = selectedLayout === layouts[0] ? 80 : 160;
+                                            const MINUTE_SIZE_PX = HOUR_SIZE_PX / 60;
+
+                                            const startHour = startTime.getHours();
+                                            const startMinutes = startTime.getMinutes();
+                                            const endHour = endTime.getHours();
+                                            const endMinutes = endTime.getMinutes();
+
+                                            const durationMinutes = (endHour - startHour) * 60 + (endMinutes - startMinutes);
+
+                                            const topValue = (startHour * HOUR_SIZE_PX) + (startMinutes * MINUTE_SIZE_PX);
+                                            const heightValue = durationMinutes * MINUTE_SIZE_PX;
+
+                                            return (
+                                                <Button onClick={() => handleEventClick(event)} key={idx} className={cn("p-1 mt-[69px] w-full absolute text-primary transition-[height] duration-200 justify-start !bg-transparent !shadow-none", selectedLayout === layouts[0] ? "h-20" : "h-40")} style={{ top: `${topValue}px`, height: `${heightValue}px` }}>
+                                                    <div className="rounded-md h-full text-primary flex flex-col gap-0 min-w-full overflow-hidden p-2 text-left" style={{backgroundColor: event.color}}>
+                                                        <span className="font-semibold leading-none">{event.title}</span>
+                                                        <span>{event.startTime} &mdash; {event.endTime}</span>
+                                                    </div>
+                                                </Button>
+                                            );
+                                        })}
+                                    </div>
+
+                                ))}
                             </div>
                         </div>
                         : <div className="h-[calc(100vh-64px)]"> {/* month view */}
@@ -138,7 +162,7 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                                     {generateCalendarGrid(visibleDate).map((day, idx) => (
                                         <div
                                             key={idx}
-                                            className={cn("w-full rounded-none border-[0.5px] animate-[width,height] duration-200 h-full",
+                                            className={cn("w-full space-y-1 rounded-none border-[0.5px] animate-[width,height] duration-200 h-full",
                                                 day.isThisMonth ? "bg-transparent" : "bg-muted",
                                                 idx === 0 ? "border-t-0 border-l-0" : idx % 7 === 0 ? "border-l-0" : Math.floor(idx / 7) === 0 ? "border-t-0" : "",
                                             )}>
@@ -146,6 +170,18 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                                                 <span className="font-mono">{formatDate(day.date).day}</span>
                                                 <span className="font-serif text-base leading-none font-black text-primary/80">{formatDate(day.date).dayNumber}</span>
                                             </div>
+                                            {getVisibleEvents(events, day.date).map((event, idx) => {
+                                                if (!day.isThisMonth) return null
+                                            return (
+                                                <Button variant="ghost" onClick={() => handleEventClick(event)} key={idx} className="p-1 px-2.5 h-fit w-full text-primary justify-start !shadow-none">
+                                                    <div className="rounded-md h-full text-primary flex gap-2 min-w-full overflow-hidden items-center text-left">
+                                                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: event.color }} />
+                                                        <span className="font-semibold leading-none text-sm truncate">{event.title}</span>
+                                                    </div>
+                                                </Button>
+                                            );
+                                        })}
+
                                         </div>
                                     ))}
                                 </div>

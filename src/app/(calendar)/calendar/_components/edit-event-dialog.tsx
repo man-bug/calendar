@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRightIcon, CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, CalendarIcon, ReloadIcon, Share1Icon, Share2Icon, TrashIcon } from "@radix-ui/react-icons";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import ColorPicker from "./color-picker";
 import { Combobox } from "@/components/combo-box";
@@ -273,11 +273,16 @@ export default function EditEventDialog({ open, setOpen, selectedEvent}: Props) 
 
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem value="advanced" className="border-b-0">
-                                    <AccordionTrigger className="font-normal text-xs">
+                                    <AccordionTrigger className="font-normal text-xs justify-start gap-2 !no-underline">
                                         Advanced
                                     </AccordionTrigger>
-                                    <AccordionContent>
-                                        <Button type="button" onClick={() => handleDelete()} variant="destructive">
+                                    <AccordionContent className="flex flex-col space-y-2">
+                                        <Button type="button" onClick={() => {}} variant="secondary" className="gap-1">
+                                            <Share2Icon className="w-4 h-4" />
+                                            Share event
+                                        </Button>
+                                        <Button type="button" onClick={() => handleDelete()} variant="destructive" className="gap-1">
+                                            <TrashIcon className="w-4 h-4" />
                                             Delete event
                                         </Button>
                                     </AccordionContent>

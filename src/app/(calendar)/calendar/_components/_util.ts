@@ -1,5 +1,6 @@
+import { View, views } from "@/context/selected-view-context";
 import { CalendarEvent } from "@prisma/client";
-import { addDays, differenceInDays, endOfMonth, format, getDate, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
+import { addDays, differenceInDays, endOfMonth, endOfWeek, format, getDate, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
 import * as z from "zod";
 
 export const eventFormSchema = z.object({
@@ -40,13 +41,13 @@ export function generateCalendarGrid(currentDate: Date) {
 
     const firstDayOfWeek = startOfWeek(monthStart);
     const daysToSubtract = differenceInDays(monthStart, firstDayOfWeek);
-    const adjustedMonthStart = subDays(monthStart, daysToSubtract % 7);
+    const adjustedMonthStart = subDays(monthStart, daysToSubtract);
     const daysInPrevMonth = daysToSubtract;
     const daysInNextMonth = 42 - daysInMonth - daysInPrevMonth; // 42 cells in a 6x7 grid
 
     let days = [];
     for (let i = 0; i < daysInPrevMonth; i++) {
-        days.push({ date: addDays(adjustedMonthStart, 0 - i), isThisMonth: false });
+        days.push({ date: addDays(adjustedMonthStart, i), isThisMonth: false });
     }
     for (let i = 0; i < daysInMonth; i++) {
         days.push({ date: addDays(monthStart, i), isThisMonth: true });
@@ -60,22 +61,22 @@ export function generateCalendarGrid(currentDate: Date) {
 
 export function getVisibleEvents(events: CalendarEvent[], visibleDate: Date) {
     return events.filter(event => {
-        if (event.repeat === "daily") {
-            const daysSinceStart = differenceInDays(visibleDate, event.startDate);
-            return daysSinceStart >= 0;
-        }
-        if (event.repeat === "weekly") {
-            const daysSinceStart = differenceInDays(visibleDate, event.startDate);
-            const visibleDayOfWeek = visibleDate.getDay();
-            const eventStartDayOfWeek = event.startDate.getDay();
-            return daysSinceStart >= 0 && visibleDayOfWeek === eventStartDayOfWeek;
-        }
-        if (event.repeat === "weekdays") {
-            const daysSinceStart = differenceInDays(visibleDate, event.startDate);
-            const visibleDayOfWeek = visibleDate.getDay();
-            return daysSinceStart >= 0 && visibleDayOfWeek >= 1 && visibleDayOfWeek <= 5;
-        }
-        return isSameDay(event.startDate, visibleDate);
+            if (event.repeat === "daily") {
+                const daysSinceStart = differenceInDays(visibleDate, event.startDate);
+                return daysSinceStart >= 0;
+            }
+            if (event.repeat === "weekly") {
+                const daysSinceStart = differenceInDays(visibleDate, event.startDate);
+                const visibleDayOfWeek = visibleDate.getDay();
+                const eventStartDayOfWeek = event.startDate.getDay();
+                return daysSinceStart >= 0 && visibleDayOfWeek === eventStartDayOfWeek;
+            }
+            if (event.repeat === "weekdays") {
+                const daysSinceStart = differenceInDays(visibleDate, event.startDate);
+                const visibleDayOfWeek = visibleDate.getDay();
+                return daysSinceStart >= 0 && visibleDayOfWeek >= 1 && visibleDayOfWeek <= 5;
+            }
+            return isSameDay(event.startDate, visibleDate);
     });
 }
 

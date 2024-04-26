@@ -7,12 +7,12 @@ export default async function Calendar() {
     const events = await getEvents();
 
     return (
-        <ScrollArea className="grow basis-0">
-            <main className="max-h-[calc(100vh-64px)]">
-                <CalendarView events={events} />
+            <main>
+                <ScrollArea className="grow basis-0">
+                    <CalendarView events={events} />
+                    <ScrollBar />
+                <ScrollBar className="!fixed bottom-0" style={{ position: "fixed" }} orientation="horizontal" />
+                </ScrollArea>
             </main>
-            <ScrollBar orientation="horizontal" />
-            <ScrollBar />
-        </ScrollArea>
     )
 }
