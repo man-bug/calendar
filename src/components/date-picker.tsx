@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover"
 import { useVisibleDate } from "@/context/visible-date-context"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { useSelectedView } from "@/context/selected-view-context"
 
 type Props = {
     todayBtn?: boolean;
@@ -19,12 +20,19 @@ type Props = {
     required?: boolean;
     customSelected?: Date;
     customSetter?: React.Dispatch<React.SetStateAction<any>>;
+    abbreviated?: boolean
 };
 
-export function DatePicker({ todayBtn, initialSelection, customSetter, customSelected, required }: Props) {
-    const [date, setDate] = React.useState<Date | undefined>(initialSelection)
+export function DatePicker({ todayBtn, initialSelection, customSetter, customSelected, required, abbreviated }: Props) {
+    const [date, setDate] = React.useState<Date | undefined>(initialSelection ?? new Date())
     const { setVisibleDate } = useVisibleDate();
+    const { selectedView } = useSelectedView();
     const isDesktop = useMediaQuery("(min-width: 768px)");
+
+    let formattedDate = format(date ?? new Date(), "PPP");
+    if (abbreviated && customSelected) formattedDate = format(customSelected, "LLL dd, y")
+    if (customSelected) formattedDate = format(customSelected, "PPP")
+    if (initialSelection) formattedDate = format(initialSelection, "EEEE, PP")
 
     return (
         <Popover>
@@ -39,7 +47,7 @@ export function DatePicker({ todayBtn, initialSelection, customSetter, customSel
                         )}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date && initialSelection ? format(date, "EEEE, PP") : customSelected ? format(customSelected, "PPP") : date ? format(date, "PPP") : format(new Date(), "PPP")}
+                        {formattedDate}
                     </Button>
                     {todayBtn && <Button onClick={(e) => {e.stopPropagation(); setVisibleDate(new Date())}} variant="secondary" className="absolute right-0 h-9 rounded-l-none shadow-none" size="sm">Today</Button>}
                 </div>

@@ -11,6 +11,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { CalendarEvent } from "@prisma/client";
 import { formatDate, formatHour, generateCalendarGrid, getVisibleEvents, getWeekDays, hours } from "./_util";
 import EditEventDialog from "./edit-event-dialog";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export type DateTime = {
     date: Date,
@@ -98,8 +99,8 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                                     <span className="font-mono text-muted-foreground">W{currentWeekNumber}</span>
                                 </div>
 
-                                {hours.map(hour => (
-                                    <div key={hour} className={cn("flex w-full shrink-0 animate-[height] items-center gap-4 pr-3 border-b border-r duration-200", selectedLayout === layouts[0] ? "h-20" : "h-40")}>
+                                {hours.map((hour, idx) => (
+                                    <div key={idx} className={cn("flex w-full shrink-0 animate-[height] items-center gap-4 pr-3 border-b border-r duration-200", selectedLayout === layouts[0] ? "h-20" : "h-40")}>
                                         <div className="flex w-full shrink-0 items-center justify-between gap-1 text-xs text-muted-foreground">
                                             <span className="ml-auto">{formatHour(hour, visibleDate).time}</span>
                                             <span>{formatHour(hour, visibleDate).meridiem}</span>
@@ -160,29 +161,31 @@ export default function CalendarView({ events }: { events: CalendarEvent[] }) {
                             <div className={cn("flex", selectedLayout === layouts[0] ? "h-full w-full" : "h-[125%] w-[125%]")}>
                                 <div className="grow grid grid-rows-6 grid-cols-7">
                                     {generateCalendarGrid(visibleDate).map((day, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={cn("w-full space-y-1 rounded-none border-[0.5px] animate-[width,height] duration-200 h-full",
-                                                day.isThisMonth ? "bg-transparent" : "bg-muted",
-                                                idx === 0 ? "border-t-0 border-l-0" : idx % 7 === 0 ? "border-l-0" : Math.floor(idx / 7) === 0 ? "border-t-0" : "",
-                                            )}>
-                                            <div className="flex w-full flex-col items-center justify-center text-xs text-muted-foreground py-1">
-                                                <span className="font-mono">{formatDate(day.date).day}</span>
-                                                <span className="font-serif text-base leading-none font-black text-primary/80">{formatDate(day.date).dayNumber}</span>
-                                            </div>
-                                            {getVisibleEvents(events, day.date).map((event, idx) => {
-                                                if (!day.isThisMonth) return null
-                                            return (
-                                                <Button variant="ghost" onClick={() => handleEventClick(event)} key={idx} className="p-1 px-2.5 h-fit w-full text-primary justify-start !shadow-none">
-                                                    <div className="rounded-md h-full text-primary flex gap-2 min-w-full overflow-hidden items-center text-left">
-                                                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: event.color }} />
-                                                        <span className="font-semibold leading-none text-sm truncate">{event.title}</span>
-                                                    </div>
-                                                </Button>
-                                            );
-                                        })}
+                                        <ScrollArea key={idx} className="grow min-h-full overflow-y-auto">
+                                            <div
+                                                className={cn("w-full space-y-1 rounded-none border-[0.5px] animate-[width,height] duration-200 h-full",
+                                                    day.isThisMonth ? "bg-transparent" : "bg-muted",
+                                                    idx === 0 ? "border-t-0 border-l-0" : idx % 7 === 0 ? "border-l-0" : Math.floor(idx / 7) === 0 ? "border-t-0" : "",
+                                                )}>
+                                                <div className="flex w-full flex-col items-center justify-center text-xs text-muted-foreground py-1">
+                                                    <span className="font-mono">{formatDate(day.date).day}</span>
+                                                    <span className="font-serif text-base leading-none font-black text-primary/80">{formatDate(day.date).dayNumber}</span>
+                                                </div>
+                                                {getVisibleEvents(events, day.date).map((event, idx) => {
+                                                    if (!day.isThisMonth) return null
+                                                    return (
+                                                        <Button variant="ghost" onClick={() => handleEventClick(event)} key={idx} className="p-1 px-2.5 h-fit w-full text-primary justify-start !shadow-none">
+                                                            <div className="rounded-md h-full text-primary flex gap-2 max-w-full overflow-hidden items-center text-left">
+                                                                <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: event.color }} />
+                                                                <span className="font-semibold leading-none text-sm truncate">{event.title}</span>
+                                                            </div>
+                                                        </Button>
+                                                    );
+                                                })}
 
-                                        </div>
+                                            </div>
+                                            <ScrollBar />
+                                        </ScrollArea>
                                     ))}
                                 </div>
                             </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRightIcon, CalendarIcon, ReloadIcon, Share1Icon, Share2Icon, TrashIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, CalendarIcon, ReloadIcon, Share2Icon, TrashIcon } from "@radix-ui/react-icons";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import ColorPicker from "./color-picker";
 import { Combobox } from "@/components/combo-box";

@@ -22,6 +22,10 @@ const fontSerif = FontSerif({
     variable: "--font-serif",
 });
 
+// cloudflare pages deployment
+export const runtime = "nodejs";
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
     title: "calendar",
     description: "manbug's calendar",

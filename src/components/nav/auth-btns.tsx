@@ -1,9 +1,8 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,14 +10,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import useDomLoaded from "@/hooks/use-dom-loaded";
-import { Skeleton } from "../ui/skeleton";
+import { Session } from "next-auth";
 
-export default function AuthBtns() {
-    const { data: session } = useSession();
-    const loaded = useDomLoaded();
-
-    if (loaded && session && session.user?.email) {
+export default function AuthBtns({ session }: { session: Session | null }) {
+    if (session && session.user?.email) {
         const email = session.user.email;
         return (
             <DropdownMenu>

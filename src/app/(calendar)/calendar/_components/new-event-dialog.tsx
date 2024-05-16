@@ -6,7 +6,7 @@ import { Combobox } from "@/components/combo-box";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DateTime } from "./calendar-view";
-import { addHours, addMinutes, format } from "date-fns";
+import { addHours, addMinutes, format, setHours } from "date-fns";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,8 +41,8 @@ export default function NewEventDialog({ open, setOpen, selectedDateTime }: Prop
         defaultValues: {
             title: "New Event",
             startDate: selectedDateTime.date,
-            startTime: format(addHours(new Date(selectedDateTime.date), selectedDateTime.hour), "h:mm a"),
-            endTime: format(addHours(new Date(selectedDateTime.date), selectedDateTime.hour + 1), "h:mm a"),
+            startTime: format(setHours(new Date(selectedDateTime.date), selectedDateTime.hour), "h:mm a"),
+            endTime: format(addHours(setHours(new Date(selectedDateTime.date), selectedDateTime.hour), 1), "h:mm a"),
             repeat: "never",
             color: "#9EC1CF",
             label: "none",
