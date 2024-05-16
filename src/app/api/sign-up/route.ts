@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";

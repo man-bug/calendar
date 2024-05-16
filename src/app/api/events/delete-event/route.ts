@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { NextResponse } from "next/server";
 import * as z from "zod";
 import { db } from "@/lib/db";
