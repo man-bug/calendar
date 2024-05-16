@@ -23,7 +23,7 @@ const fontSerif = FontSerif({
 });
 
 // cloudflare pages deployment
-export const runtime = "nodejs";
+export const runtime = "edge";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
